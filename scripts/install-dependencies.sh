@@ -11,25 +11,14 @@ if [ -f .nvmrc ]; then
     current_version=${current_node_version#v}
 
     if [ "$required_version" != "$current_version" ]; then
-        echo "⚠️  Warning: Your Node.js version ($current_node_version) does not match the required version ($required_node_version)"
-        echo "Please consider switching to the correct version using: nvm use"
-
-        if [ -t 0 ]; then
-            read -p "Press Enter to continue with installation anyway..."
-        else
-            echo "Continuing with installation anyway..."
-        fi
-        echo
+        echo "❌ Node.js version mismatch: got $current_node_version, need $required_node_version"
+        echo "Run: nvm use"
+        exit 1
     fi
 fi
 
 echo "Installing root-level dependencies..."
 npm install
-
-# sharp is pulled in by @xenova/transformers (core). Default libvips download is from GitHub
-# and often times out; npmmirror works reliably in CN networks.
-export npm_config_sharp_libvips_binary_host="${npm_config_sharp_libvips_binary_host:-https://npmmirror.com/mirrors/sharp-libvips}"
-export npm_config_sharp_binary_host="${npm_config_sharp_binary_host:-https://npmmirror.com/mirrors/sharp}"
 
 echo "Building packages (fetch, openai-adapters, config-yaml)..."
 node ./scripts/build-packages.js
@@ -37,15 +26,17 @@ node ./scripts/build-packages.js
 echo "Installing Core dependencies..."
 pushd core
 export PUPPETEER_SKIP_DOWNLOAD='true'
-npm install
-npm link
+# Skip native compile scripts (sqlite3 node-gyp); install prebuilt binary below.
+npm install --ignore-scripts
+popd
+node ./scripts/build/install-core-native-deps.js
+pushd core
 npm run build
 popd
 
 echo "Installing GUI dependencies and building..."
 pushd gui
 npm install
-npm link @continuedev/core
 NODE_OPTIONS="--max-old-space-size=4096" npm run build
 popd
 

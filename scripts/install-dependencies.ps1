@@ -21,16 +21,9 @@ if (Test-Path ".nvmrc") {
     $currentVersion = $currentNodeVersion.TrimStart('v')
 
     if ($requiredVersion -ne $currentVersion) {
-        Write-Host "`n⚠️  Warning: Your Node.js version ($currentNodeVersion) does not match the required version ($requiredNodeVersion)" -ForegroundColor Yellow
-        Write-Host "Please consider switching to the correct version using: nvm use" -ForegroundColor Yellow
-
-        if ([Environment]::UserInteractive -and [Environment]::GetCommandLineArgs().Count -eq 0) {
-            Write-Host "Press Enter to continue with installation anyway..." -NoNewline -ForegroundColor Yellow
-            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-            Write-Host "`n"
-        } else {
-            Write-Host "Continuing with installation anyway...`n" -ForegroundColor Yellow
-        }
+        Write-Host "`nNode.js version mismatch: got $currentNodeVersion, need $requiredNodeVersion" -ForegroundColor Red
+        Write-Host "Run: nvm use" -ForegroundColor Yellow
+        exit 1
     }
 }
 
@@ -42,23 +35,22 @@ if ($null -eq $node) {
 Write-Host "`nInstalling root-level dependencies..." -ForegroundColor White
 npm install
 
-$env:npm_config_sharp_libvips_binary_host = if ($env:npm_config_sharp_libvips_binary_host) { $env:npm_config_sharp_libvips_binary_host } else { "https://npmmirror.com/mirrors/sharp-libvips" }
-$env:npm_config_sharp_binary_host = if ($env:npm_config_sharp_binary_host) { $env:npm_config_sharp_binary_host } else { "https://npmmirror.com/mirrors/sharp" }
-
 Write-Host "`nBuilding packages..." -ForegroundColor White
 node ./scripts/build-packages.js
 
 Write-Host "`nInstalling Core dependencies..." -ForegroundColor White
 Push-Location core
-npm install
-npm link
+$env:PUPPETEER_SKIP_DOWNLOAD = 'true'
+npm install --ignore-scripts
+Pop-Location
+node ./scripts/build/install-core-native-deps.js
+Push-Location core
 npm run build
 Pop-Location
 
 Write-Host "`nInstalling GUI dependencies and building..." -ForegroundColor White
 Push-Location gui
 npm install
-npm link @continuedev/core
 npm run build
 Pop-Location
 
