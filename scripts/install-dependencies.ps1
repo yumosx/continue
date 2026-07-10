@@ -1,4 +1,4 @@
-# Install dependencies for CLI and IntelliJ IDEA plugin development.
+# Install dependencies for CLI development.
 set -e
 
 Write-Host "`nChecking for dependencies that may require manual installation...`n" -ForegroundColor White
@@ -48,24 +48,10 @@ Push-Location core
 npm run build
 Pop-Location
 
-Write-Host "`nInstalling GUI dependencies and building..." -ForegroundColor White
-Push-Location gui
-npm install
-npm run build
-Pop-Location
-
-Write-Host "`nPreparing IntelliJ plugin resources..." -ForegroundColor White
-node ./scripts/build/prepare-intellij.js
-
-Write-Host "`nInstalling binary dependencies..." -ForegroundColor White
-Push-Location binary
-npm install
-npm run build
-Pop-Location
-
 Write-Host "`nInstalling CLI dependencies..." -ForegroundColor White
 Push-Location extensions/cli
 npm install
 Pop-Location
 
-Write-Host "`nDone." -ForegroundColor Green
+Write-Host "`nDone. To run the CLI:" -ForegroundColor Green
+Write-Host "  cd extensions/cli && npm run build && npm start" -ForegroundColor Green

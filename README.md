@@ -1,6 +1,6 @@
 <h1 align="center">Continue</h1>
 
-<p align="center">Community-maintained fork focused on CLI and JetBrains IDEA plugin</p>
+<p align="center">Community-maintained fork focused on the CLI</p>
 
 <div align="center">
 
@@ -13,26 +13,31 @@
 This repository is a slimmed-down fork of [Continue](https://github.com/continuedev/continue), maintained for:
 
 - **CLI** — terminal AI coding agent (`extensions/cli`)
-- **JetBrains IDEA plugin** — IntelliJ / PyCharm / WebStorm integration (`extensions/intellij`)
 
-The VS Code extension, documentation site, and other unused components have been removed.
+The VS Code extension, JetBrains IDEA plugin, documentation site, and other unused components have been removed.
 
 ## Repository layout
 
 ```
-extensions/cli/       CLI tool (@continuedev/cli)
-extensions/intellij/  JetBrains plugin (Kotlin)
-core/                 Shared TypeScript core logic
-gui/                  React UI embedded in the IDEA plugin
-binary/               continue-binary packaged into the IDEA plugin
-packages/             Shared npm packages (config-yaml, fetch, etc.)
-config/               Config JSON schemas for the IDEA plugin
-scripts/build/        Build scripts for IDEA plugin packaging
+extensions/cli/   CLI tool (@continuedev/cli)
+core/             Shared TypeScript core logic
+packages/         Shared npm packages (config-yaml, fetch, etc.)
+config/           Config JSON schemas
+scripts/          Install and build scripts
 ```
 
 ## Quick start
 
-### CLI
+### One-shot install
+
+```bash
+./scripts/install-dependencies.sh
+cd extensions/cli
+npm run build
+npm start
+```
+
+### Manual install
 
 ```bash
 cd extensions/cli
@@ -41,25 +46,7 @@ npm run build
 npm start
 ```
 
-### IntelliJ plugin (development)
-
-Requirements: Node.js 20+, JDK 17, IntelliJ IDEA
-
-```bash
-./scripts/install-dependencies.sh
-```
-
-Then open `extensions/intellij` in IntelliJ IDEA and run the **Run Continue** configuration. See [extensions/intellij/CONTRIBUTING.md](extensions/intellij/CONTRIBUTING.md) for details.
-
-### Build IDEA plugin (production)
-
-```bash
-./scripts/install-dependencies.sh
-cd extensions/intellij
-./gradlew buildPlugin
-```
-
-Output: `extensions/intellij/build/distributions/continue-intellij-extension-*.zip`
+Configure models in `~/.continue/config.yaml`. See [extensions/cli/README.md](extensions/cli/README.md) for details.
 
 ## License
 

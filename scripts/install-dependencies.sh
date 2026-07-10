@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install dependencies for CLI and IntelliJ IDEA plugin development.
+# Install dependencies for CLI development.
 set -e
 
 # Check if node version matches .nvmrc
@@ -34,24 +34,10 @@ pushd core
 npm run build
 popd
 
-echo "Installing GUI dependencies and building..."
-pushd gui
-npm install
-NODE_OPTIONS="--max-old-space-size=4096" npm run build
-popd
-
-echo "Preparing IntelliJ plugin resources..."
-node ./scripts/build/prepare-intellij.js
-
-echo "Installing binary dependencies..."
-pushd binary
-npm install
-npm run build
-popd
-
 echo "Installing CLI dependencies..."
 pushd extensions/cli
 npm install
 popd
 
-echo "Done. To run the IntelliJ plugin locally, open extensions/intellij in IntelliJ IDEA and use the Run Continue configuration."
+echo "Done. To run the CLI:"
+echo "  cd extensions/cli && npm run build && npm start"
