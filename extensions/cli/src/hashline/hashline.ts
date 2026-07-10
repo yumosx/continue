@@ -39,12 +39,4 @@ export function formatHashLines(content: string): string {
   return lines.map((line, index) => formatHashLine(index + 1, line)).join("\n");
 }
 
-/** @deprecated Use computeLineHash instead */
-export function hash(lineNumber: number, content: string): string {
-  return computeLineHash(lineNumber, content);
-}
-
-/** @deprecated Use formatHashLines instead */
-export function formatHash(content: string): string {
-  return formatHashLines(content);
-}
+export function validateLineReferences() {}

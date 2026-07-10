@@ -113,10 +113,9 @@ WARNINGS:
     const { resolvedPath } = validateAndResolveFilePath(args);
 
     let replace_all = false;
-    const { oldString, newString, replaceAll } = validateSingleEdit(
+    const { oldString, newString, start, end } = validateSingleEdit(
       old_string,
       new_string,
-      replace_all,
       from,
       to,
     );

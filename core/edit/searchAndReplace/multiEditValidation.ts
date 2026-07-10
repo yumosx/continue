@@ -39,7 +39,7 @@ export function validateMultiEdit(args: unknown): {
     const edit = edits[i];
 
     // Use existing single edit validation
-    validateSingleEdit(edit.old_string, edit.new_string, edit.replace_all, i);
+    validateSingleEdit(edit.old_string, edit.new_string, "", "");
 
     // Only the first edit can have empty old_string (for insertion at beginning)
     if (i > 0 && edit.old_string === "") {
