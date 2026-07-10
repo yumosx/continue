@@ -45,6 +45,7 @@
   },
   "homepage": "https://continue.dev",
   "dependencies": {
+    "xxhashjs": "^0.2.2",
     "fdir": "^6.4.2",
     "find-up": "^8.0.0",
     "fzf": "^0.5.2",
@@ -85,7 +86,6 @@
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
     "@vitest/ui": "^3.2.4",
-    "@workos-inc/node": "^7.45.0",
     "chalk": "^5.4.1",
     "clipboardy": "^4.0.0",
     "commander": "^14.0.0",

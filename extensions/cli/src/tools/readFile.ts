@@ -6,6 +6,7 @@ import { ContinueError, ContinueErrorReason } from "core/util/errors.js";
 import { parseEnvNumber } from "../util/truncateOutput.js";
 
 import { formatToolArgument } from "./formatters.js";
+import { formatHashLines } from "../hashline/hashline.js";
 import { Tool, ToolRunContext } from "./types.js";
 
 // Output truncation defaults
@@ -110,7 +111,9 @@ export const readFileTool: Tool = {
       // Mark this file as read for the edit tool
       markFileAsRead(realPath);
 
-      return `Content of ${filepath}:\n${content}`;
+      const formattedContent = formatHashLines(content);
+      return `Content of ${filepath}:
+${formattedContent}`;
     } catch (error) {
       if (error instanceof ContinueError) {
         throw error;

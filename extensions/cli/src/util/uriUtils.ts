@@ -1,10 +1,6 @@
 import { normalize } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 
-/**
- * URI utility functions for auth config
- */
-
 export function pathToUri(path: string): string {
   const normalizedPath = normalize(path);
   return pathToFileURL(normalizedPath).href;

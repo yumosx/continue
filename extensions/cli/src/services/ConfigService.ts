@@ -10,7 +10,6 @@ import { isStringRule } from "src/hubLoader.js";
 import { loadMarkdownRulesWithMetadata } from "src/systemMessage.js";
 import { getErrorString } from "src/util/error.js";
 
-import { AuthConfig, loadAuthConfig } from "../auth/workos.js";
 import { BaseCommandOptions } from "../commands/BaseCommandOptions.js";
 import {
   loadConfiguration,
@@ -38,7 +37,6 @@ const DEFAULT_MODEL_IDENTIFIER: PackageIdentifier = {
 };
 
 interface ConfigServiceInit {
-  authConfig: AuthConfig;
   configPath: string | undefined;
   apiClient: DefaultApiInterface;
   agentFileState: AgentFileServiceState;
@@ -64,11 +62,7 @@ export class ConfigService
    * Declare dependencies on other services
    */
   getDependencies(): string[] {
-    return [
-      SERVICE_NAMES.AUTH,
-      SERVICE_NAMES.API_CLIENT,
-      SERVICE_NAMES.AGENT_FILE,
-    ];
+    return [SERVICE_NAMES.API_CLIENT, SERVICE_NAMES.AGENT_FILE];
   }
 
   getAdditionalBlocksFromOptions(
@@ -215,7 +209,6 @@ export class ConfigService
   async addDefaultChatModelIfNone(
     config: AssistantUnrolled,
     apiClient: DefaultApiInterface,
-    authConfig: AuthConfig | undefined,
     isHeadless?: boolean,
   ): Promise<AssistantUnrolled> {
     const hasChatModel = !!config.models?.find(
@@ -253,20 +246,14 @@ export class ConfigService
   private async loadConfig(
     init: ConfigServiceInit,
   ): Promise<ConfigServiceState> {
-    const {
-      authConfig,
-      configPath,
-      apiClient,
-      injectedConfigOptions,
-      agentFileState,
-    } = init;
+    const { configPath, apiClient, injectedConfigOptions, agentFileState } =
+      init;
     const { injected, additional } = this.getAdditionalBlocksFromOptions(
       injectedConfigOptions,
       agentFileState,
     );
 
     const result = await loadConfiguration(
-      authConfig,
       configPath,
       apiClient,
       injected,
@@ -290,7 +277,6 @@ export class ConfigService
     const withModel = await this.addDefaultChatModelIfNone(
       merged,
       apiClient,
-      authConfig,
       init.isHeadless,
     );
 
@@ -371,7 +357,6 @@ export class ConfigService
 
     try {
       // Get current auth and API client state needed for config loading
-      const authConfig = loadAuthConfig();
       const { apiClient } = await serviceContainer.get<ApiClientServiceState>(
         SERVICE_NAMES.API_CLIENT,
       );
@@ -392,7 +377,6 @@ export class ConfigService
       const result = await this.loadConfig({
         agentFileState,
         apiClient,
-        authConfig,
         configPath: newConfigPath,
         injectedConfigOptions: {},
         isHeadless: toolPermissionsState.isHeadless,

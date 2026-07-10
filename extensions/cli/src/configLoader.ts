@@ -13,13 +13,7 @@ import {
 import { DefaultApiInterface } from "@continuedev/sdk/dist/api/dist/index.js";
 import chalk from "chalk";
 
-import { uriToPath, uriToSlug } from "./auth/uriUtils.js";
-import type { AuthConfig } from "./auth/workos.js";
-import {
-  getAccessToken,
-  getOrganizationId,
-  updateConfigUri,
-} from "./auth/workos.js";
+import { uriToPath, uriToSlug } from "./util/uriUtils.js";
 import { CLIPlatformClient } from "./CLIPlatformClient.js";
 import { env } from "./env.js";
 
@@ -41,36 +35,20 @@ export type ConfigSource =
  * with clear precedence and fallback logic in a single testable function.
  */
 export async function loadConfiguration(
-  authConfig: AuthConfig,
   cliConfigPath: string | undefined,
   apiClient: DefaultApiInterface,
   injectBlocks: PackageIdentifier[],
   isHeadless: boolean | undefined,
 ): Promise<ConfigLoadResult> {
-  const organizationId = getOrganizationId(authConfig);
-  const accessToken = getAccessToken(authConfig);
+  const configSource = determineConfigSource(cliConfigPath, isHeadless);
 
-  // Step 1: Determine config source using precedence rules
-  const configSource = determineConfigSource(
-    authConfig,
-    cliConfigPath,
-    isHeadless,
-  );
-
-  // Step 2: Load configuration from the determined source
   const config = await loadFromSource(
     configSource,
-    accessToken,
-    organizationId ?? null,
+    null,
+    null,
     apiClient,
     injectBlocks,
   );
-
-  // Step 3: Save config URI for session continuity
-  const uri = getUriFromSource(configSource);
-  if (uri) {
-    updateConfigUri(uri);
-  }
 
   return { config, source: configSource };
 }
@@ -82,7 +60,6 @@ export async function loadConfiguration(
  * 3. Default resolution (if no flag and no saved URI)
  */
 function determineConfigSource(
-  authConfig: AuthConfig,
   cliConfigPath: string | undefined,
   _isHeadless: boolean | undefined,
 ): ConfigSource {

@@ -1,13 +1,11 @@
-import { AuthConfig } from "../auth/workos.js";
-import { getApiClient } from "../config.js";
-import { logger } from "../util/logger.js";
+import { DefaultApiInterface } from "@continuedev/sdk/dist/api/dist/index.js";
 
 import { BaseService, ServiceWithDependencies } from "./BaseService.js";
 import { ApiClientServiceState } from "./types.js";
 
 /**
- * Service for managing API client state
- * Provides access to the Continue SDK API client
+ * Service for managing API client state.
+ * Provides access to the Continue SDK API client.
  */
 export class ApiClientService
   extends BaseService<ApiClientServiceState>
@@ -19,28 +17,21 @@ export class ApiClientService
     });
   }
 
-  /**
-   * Declare dependencies on other services
-   */
   getDependencies(): string[] {
-    return ["auth"];
+    return [];
   }
 
-  /**
-   * Initialize the API client service
-   */
-  async doInitialize(_authConfig: AuthConfig): Promise<ApiClientServiceState> {
-    const apiClient = getApiClient(undefined);
-
+  async doInitialize(): Promise<ApiClientServiceState> {
+    const { getApiClient } = await import("../config.js");
     return {
-      apiClient,
+      apiClient: getApiClient(undefined),
     };
   }
 
-  /**
-   * Update the API client with new auth config
-   */
-  async update(_authConfig: AuthConfig): Promise<ApiClientServiceState> {
+  async update(): Promise<ApiClientServiceState> {
+    const { getApiClient } = await import("../config.js");
+    const { logger } = await import("../util/logger.js");
+
     logger.debug("Updating ApiClientService");
 
     try {
@@ -59,9 +50,6 @@ export class ApiClientService
     }
   }
 
-  /**
-   * Override isReady to check for API client
-   */
   override isReady(): boolean {
     return super.isReady() && this.currentState.apiClient !== null;
   }

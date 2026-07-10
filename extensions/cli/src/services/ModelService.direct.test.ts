@@ -57,7 +57,6 @@ describe("ModelService - Direct Testing", () => {
 
     // Verify initialization succeeded with null authConfig
     expect(initialState.assistant).toBe(mockAssistant);
-    expect(initialState.authConfig).toBe(null);
     expect(initialState.model).toBeDefined();
     expect((initialState.model as any).name).toBe("claude-3.5-sonnet");
 
@@ -66,7 +65,6 @@ describe("ModelService - Direct Testing", () => {
     expect(switchedState.model).toBeDefined();
     expect((switchedState.model as any).name).toBe("GPT-4");
     expect(switchedState.assistant).toBe(mockAssistant);
-    expect(switchedState.authConfig).toBe(null);
 
     // Verify the model info
     const modelInfo = modelService.getModelInfo();

@@ -1,19 +1,11 @@
 import { AssistantUnrolled, ModelConfig } from "@continuedev/config-yaml";
 import { describe, expect, test, vi, beforeEach } from "vitest";
 
-// Mock dependencies
-vi.mock("./auth/workos.js");
-
-import type { AuthConfig } from "./auth/workos.js";
 import { getLlmApi } from "./config.js";
 
 describe("config", () => {
-  let mockAuthConfig: AuthConfig;
-
   beforeEach(() => {
     vi.clearAllMocks();
-
-    mockAuthConfig = null;
   });
 
   describe("getLlmApi()", () => {
@@ -24,7 +16,7 @@ describe("config", () => {
         models: [],
       };
 
-      expect(() => getLlmApi(assistant, mockAuthConfig)).toThrow(
+      expect(() => getLlmApi(assistant)).toThrow(
         "No models found in the configured assistant",
       );
     });
@@ -43,7 +35,7 @@ describe("config", () => {
         ],
       };
 
-      expect(() => getLlmApi(assistant, mockAuthConfig)).toThrow(
+      expect(() => getLlmApi(assistant)).toThrow(
         "No models with the chat role found in the configured assistant",
       );
     });

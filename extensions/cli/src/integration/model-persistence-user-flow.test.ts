@@ -5,10 +5,12 @@ import * as path from "path";
 import { AssistantUnrolled, ModelConfig } from "@continuedev/config-yaml";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { getModelName, updateModelName } from "../auth/workos.js";
+import {
+  getPersistedModelName,
+  persistModelName,
+} from "../util/modelPersistence.js";
 import * as config from "../config.js";
 import { ModelService } from "../services/ModelService.js";
-import { persistModelName } from "../util/modelPersistence.js";
 
 // Mock the config module
 vi.mock("../config.js");
@@ -84,7 +86,7 @@ describe("Model Persistence User Flow", () => {
 
     // Initialize ModelService (what happens on CLI start)
     const modelService = new ModelService();
-    const state = await modelService.initialize(mockAssistant, null);
+    const state = await modelService.initialize(mockAssistant, undefined);
     expect(state.model?.name).toBe("GPT-4");
 
     // User switches to Claude 3.5 Sonnet via UI
@@ -92,16 +94,16 @@ describe("Model Persistence User Flow", () => {
     const modelInfo = modelService.getModelInfo();
     expect(modelInfo?.name).toBe("Claude 3.5 Sonnet");
 
-    // updateModelName persists via GlobalContext
-    updateModelName("Claude 3.5 Sonnet");
+    // persistModelName persists via GlobalContext
+    persistModelName("Claude 3.5 Sonnet");
 
     // Verify it was saved
-    expect(getModelName(null)).toBe("Claude 3.5 Sonnet");
+    expect(getPersistedModelName()).toBe("Claude 3.5 Sonnet");
 
     // Session 2: User reopens CLI
     // Initialize ModelService with fresh state (auth is always null)
     const newModelService = new ModelService();
-    const newState = await newModelService.initialize(mockAssistant, null);
+    const newState = await newModelService.initialize(mockAssistant, undefined);
 
     // EXPECTATION: Should restore Claude 3.5 Sonnet
     expect(newState.model?.name).toBe("Claude 3.5 Sonnet");

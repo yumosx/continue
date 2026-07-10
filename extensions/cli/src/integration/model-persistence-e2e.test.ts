@@ -5,10 +5,12 @@ import * as path from "path";
 import { AssistantUnrolled, ModelConfig } from "@continuedev/config-yaml";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { getModelName, updateModelName } from "../auth/workos.js";
+import {
+  getPersistedModelName,
+  persistModelName,
+} from "../util/modelPersistence.js";
 import * as config from "../config.js";
 import { ModelService } from "../services/ModelService.js";
-import { persistModelName } from "../util/modelPersistence.js";
 
 // Mock the config module
 vi.mock("../config.js");
@@ -82,15 +84,15 @@ describe("Model Persistence End-to-End", () => {
   });
 
   test("should restore model selection after switch and restart", async () => {
-    // Step 1: Persist the model choice via updateModelName (uses GlobalContext)
-    updateModelName("Claude 3.5 Sonnet");
+    // Step 1: Persist the model choice via persistModelName (uses GlobalContext)
+    persistModelName("Claude 3.5 Sonnet");
 
     // Verify it was saved
-    expect(getModelName(null)).toBe("Claude 3.5 Sonnet");
+    expect(getPersistedModelName()).toBe("Claude 3.5 Sonnet");
 
     // Step 2: Create a new service (simulating restart) - should restore persisted model
     const service = new ModelService();
-    const state = await service.initialize(mockAssistant, null);
+    const state = await service.initialize(mockAssistant, undefined);
 
     // Verify the persisted model is restored
     expect(state.model?.name).toBe("Claude 3.5 Sonnet");
@@ -99,10 +101,10 @@ describe("Model Persistence End-to-End", () => {
 
   test("should handle model name mismatch gracefully", async () => {
     // Save a model name that doesn't exist in the assistant
-    updateModelName("Non-existent Model");
+    persistModelName("Non-existent Model");
 
     const service = new ModelService();
-    const state = await service.initialize(mockAssistant, null);
+    const state = await service.initialize(mockAssistant, undefined);
 
     // Should fall back to first available model (GPT-4)
     expect(state.model?.name).toBe("GPT-4");
@@ -130,7 +132,7 @@ describe("Model Persistence End-to-End", () => {
       ],
     } as AssistantUnrolled;
 
-    updateModelName("claude-3-5-sonnet-20241022");
+    persistModelName("claude-3-5-sonnet-20241022");
 
     const service = new ModelService();
     const state = await service.initialize(assistantWithModelField, null);
@@ -143,21 +145,21 @@ describe("Model Persistence End-to-End", () => {
     const service = new ModelService();
     // Clear any persisted model first
     persistModelName(null);
-    await service.initialize(mockAssistant, null);
+    await service.initialize(mockAssistant, undefined);
 
     // Switch to Claude 3.5 Sonnet
     await service.switchModel(1);
-    updateModelName("Claude 3.5 Sonnet");
-    expect(getModelName(null)).toBe("Claude 3.5 Sonnet");
+    persistModelName("Claude 3.5 Sonnet");
+    expect(getPersistedModelName()).toBe("Claude 3.5 Sonnet");
 
     // Switch to Claude 3 Opus
     await service.switchModel(2);
-    updateModelName("Claude 3 Opus");
-    expect(getModelName(null)).toBe("Claude 3 Opus");
+    persistModelName("Claude 3 Opus");
+    expect(getPersistedModelName()).toBe("Claude 3 Opus");
 
     // Restart and verify last selection
     const newService = new ModelService();
-    const state = await newService.initialize(mockAssistant, null);
+    const state = await newService.initialize(mockAssistant, undefined);
     expect(state.model?.name).toBe("Claude 3 Opus");
   });
 });
