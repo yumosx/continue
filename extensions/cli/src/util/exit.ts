@@ -183,7 +183,7 @@ function displaySessionUsage(): void {
 }
 
 /**
- * Exit the process after flushing telemetry and error reporting.
+ * Exit the process after flushing error reporting.
  * Use this instead of process.exit() to avoid losing metrics/logs.
  *
  * If any unhandled errors occurred during execution and the requested
