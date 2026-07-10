@@ -23,7 +23,6 @@ import {
   InternalMcpOptions,
 } from "../..";
 import { MCPManagerSingleton } from "../../context/mcp/MCPManagerSingleton";
-import TransformersJsEmbeddingsProvider from "../../llm/llms/TransformersJsEmbeddingsProvider";
 import { getAllPromptFiles } from "../../promptFiles/getPromptFiles";
 import { GlobalContext } from "../../util/GlobalContext";
 import { modifyAnyConfigWithSharedConfig } from "../sharedConfig";
@@ -312,16 +311,11 @@ export async function configYamlToContinueConfig(options: {
       if (model.roles?.includes("embed")) {
         const { provider } = model;
         if (provider === "transformers.js") {
-          if (ideInfo.ideType === "vscode") {
-            continueConfig.modelsByRole.embed.push(
-              new TransformersJsEmbeddingsProvider(),
-            );
-          } else {
-            localErrors.push({
-              fatal: false,
-              message: `Transformers.js embeddings provider not supported in this IDE.`,
-            });
-          }
+          localErrors.push({
+            fatal: false,
+            message:
+              "Transformers.js embeddings provider is not supported. Configure an API-based embed provider instead.",
+          });
         } else {
           continueConfig.modelsByRole.embed.push(...llms);
         }
@@ -340,18 +334,6 @@ export async function configYamlToContinueConfig(options: {
         message: `Failed to load model:\nName: ${model.name}\nModel: ${model.model}\nProvider: ${model.provider}\n${e instanceof Error ? e.message : e}`,
       });
     }
-  }
-
-  // Add transformers js to the embed models in vs code if not already added
-  if (
-    ideInfo.ideType === "vscode" &&
-    !continueConfig.modelsByRole.embed.find(
-      (m) => m.providerName === "transformers.js",
-    )
-  ) {
-    continueConfig.modelsByRole.embed.push(
-      new TransformersJsEmbeddingsProvider(),
-    );
   }
 
   const { providers, errors: contextErrors } = loadConfigContextProviders(

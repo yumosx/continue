@@ -40,7 +40,6 @@ import { BaseLLM } from "../llm";
 import { LLMClasses, llmFromDescription } from "../llm/llms";
 import CustomLLMClass from "../llm/llms/CustomLLM";
 import { LLMReranker } from "../llm/llms/llm";
-import TransformersJsEmbeddingsProvider from "../llm/llms/TransformersJsEmbeddingsProvider";
 import { getAllPromptFiles } from "../promptFiles/getPromptFiles";
 import { copyOf } from "../util";
 import { GlobalContext } from "../util/GlobalContext";
@@ -404,25 +403,25 @@ async function intermediateToFinalConfig({
       }
       const { provider, ...options } = embedConfig;
       if (provider === "transformers.js") {
-        return new TransformersJsEmbeddingsProvider();
-      } else {
-        const cls = LLMClasses.find((c) => c.providerName === provider);
-        if (cls) {
-          const llmOptions: LLMOptions = {
-            model: options.model ?? "UNSPECIFIED",
-            ...options,
-          };
-          return new cls(llmOptions);
-        } else {
-          errors.push({
-            fatal: false,
-            message: `Embeddings provider ${provider} not found`,
-          });
-        }
+        errors.push({
+          fatal: false,
+          message:
+            "Embeddings provider transformers.js is not supported. Configure an API-based embed provider (e.g. openai, ollama).",
+        });
+        return null;
       }
-    }
-    if (ideInfo.ideType === "vscode") {
-      return new TransformersJsEmbeddingsProvider();
+      const cls = LLMClasses.find((c) => c.providerName === provider);
+      if (cls) {
+        const llmOptions: LLMOptions = {
+          model: options.model ?? "UNSPECIFIED",
+          ...options,
+        };
+        return new cls(llmOptions);
+      }
+      errors.push({
+        fatal: false,
+        message: `Embeddings provider ${provider} not found`,
+      });
     }
     return null;
   }
@@ -578,18 +577,6 @@ async function intermediateToFinalConfig({
         message: `experimental.modelRoles.applyCodeBlock model title ${inlineEditModel} not found in models array`,
       });
     }
-  }
-
-  // Add transformers JS to the embed models list if not already added
-  if (
-    ideInfo.ideType === "vscode" &&
-    !continueConfig.modelsByRole.embed.find(
-      (m) => m.providerName === "transformers.js",
-    )
-  ) {
-    continueConfig.modelsByRole.embed.push(
-      new TransformersJsEmbeddingsProvider(),
-    );
   }
 
   return { config: continueConfig, errors };

@@ -26,6 +26,11 @@ fi
 echo "Installing root-level dependencies..."
 npm install
 
+# sharp is pulled in by @xenova/transformers (core). Default libvips download is from GitHub
+# and often times out; npmmirror works reliably in CN networks.
+export npm_config_sharp_libvips_binary_host="${npm_config_sharp_libvips_binary_host:-https://npmmirror.com/mirrors/sharp-libvips}"
+export npm_config_sharp_binary_host="${npm_config_sharp_binary_host:-https://npmmirror.com/mirrors/sharp}"
+
 echo "Building packages (fetch, openai-adapters, config-yaml)..."
 node ./scripts/build-packages.js
 

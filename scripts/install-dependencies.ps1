@@ -42,6 +42,9 @@ if ($null -eq $node) {
 Write-Host "`nInstalling root-level dependencies..." -ForegroundColor White
 npm install
 
+$env:npm_config_sharp_libvips_binary_host = if ($env:npm_config_sharp_libvips_binary_host) { $env:npm_config_sharp_libvips_binary_host } else { "https://npmmirror.com/mirrors/sharp-libvips" }
+$env:npm_config_sharp_binary_host = if ($env:npm_config_sharp_binary_host) { $env:npm_config_sharp_binary_host } else { "https://npmmirror.com/mirrors/sharp" }
+
 Write-Host "`nBuilding packages..." -ForegroundColor White
 node ./scripts/build-packages.js
 

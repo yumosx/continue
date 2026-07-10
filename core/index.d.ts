@@ -1795,7 +1795,7 @@ export interface Config {
   disableSessionTitles?: boolean;
   /** An optional token to identify a user. Not used by Continue unless you write custom coniguration that requires such a token */
   userToken?: string;
-  /** The provider used to calculate embeddings. If left empty, Continue will use transformers.js to calculate the embeddings with all-MiniLM-L6-v2 */
+  /** The provider used to calculate embeddings (e.g. openai, ollama). */
   embeddingsProvider?: EmbeddingsProviderDescription | ILLM;
   /** The model that Continue will use for tab autocompletions. */
   tabAutocompleteModel?:

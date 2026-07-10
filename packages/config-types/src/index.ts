@@ -105,7 +105,6 @@ export type ModelDescription = z.infer<typeof modelDescriptionSchema>;
 
 export const embeddingsProviderSchema = z.object({
   provider: z.enum([
-    "transformers.js",
     "ollama",
     "openai",
     "cohere",
