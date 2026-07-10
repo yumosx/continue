@@ -19,6 +19,8 @@ export interface EditOperation {
   old_string: string;
   new_string: string;
   replace_all?: boolean;
+  from: string;
+  to: string;
 }
 
 export interface MultiEditArgs {
