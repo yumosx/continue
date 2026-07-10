@@ -19,14 +19,8 @@
     "eslint-plugin-import": "^2.29.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
-    "ncp": "^2.0.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "rimraf": "^5.0.7",
-    "typescript": "^5.6.3",
-    "undici": "^6.24.0"
-  },
-  "dependencies": {
-    "@ai-sdk/deepseek": "^2.0.20"
+    "typescript": "^5.6.3"
   }
 }

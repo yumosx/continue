@@ -33,7 +33,6 @@
     "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.3",
-    "ts-node": "^10.9.2",
     "zod-to-json-schema": "^3.24.5",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
