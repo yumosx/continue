@@ -192,15 +192,11 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
 
-      # Run prepackage.js script
-      - name: Run prepackage script
+      # Prepare IntelliJ plugin resources
+      - name: Prepare IntelliJ plugin resources
         run: |
-          cd ../../extensions/vscode
-          npm ci
-          npm run prepackage
-        env:
-          # https://github.com/microsoft/vscode-ripgrep/issues/9#issuecomment-643965333
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+          cd ../..
+          node ./scripts/build/prepare-intellij.js
 
       # npm install binary
       - name: Install binary node_modules

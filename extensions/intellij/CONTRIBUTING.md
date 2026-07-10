@@ -32,8 +32,9 @@ This file is for contribution guidelines specific to the JetBrains extension. Se
 
 ## Architecture Overview
 
-This extension shares much of the code with the VS Code extension by utilizing shared code in the `core` directory and
-packaging it in a binary in the `binary` directory. Communication occurs over stdin/stdout.
+This extension uses shared code in the `core` directory, a React UI in `gui`, and packages it as a Node binary in the
+`binary` directory. The Kotlin plugin communicates with the binary over stdin/stdout and embeds the GUI in a JCEF
+webview.
 
 ## Environment Setup
 

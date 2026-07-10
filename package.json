@@ -1,11 +1,13 @@
 {
   "name": "continue",
   "scripts": {
-    "tsc:watch": "concurrently -n gui,vscode,core,binary -c cyan,magenta,yellow,green \"npm run tsc:watch:gui\" \"npm run tsc:watch:vscode\" \"npm run tsc:watch:core\" \"npm run tsc:watch:binary\"",
+    "tsc:watch": "concurrently -n gui,core,binary,cli -c cyan,yellow,green,magenta \"npm run tsc:watch:gui\" \"npm run tsc:watch:core\" \"npm run tsc:watch:binary\" \"npm run tsc:watch:cli\"",
     "tsc:watch:gui": "tsc --project gui/tsconfig.json --watch --noEmit --pretty",
-    "tsc:watch:vscode": "tsc --project extensions/vscode/tsconfig.json --watch --noEmit --pretty",
     "tsc:watch:core": "tsc --project core/tsconfig.json --watch --noEmit --pretty",
     "tsc:watch:binary": "tsc --project binary/tsconfig.json --watch --noEmit --pretty",
+    "tsc:watch:cli": "tsc --project extensions/cli/tsconfig.json --watch --noEmit --pretty",
+    "prepare:intellij": "node scripts/build/prepare-intellij.js",
+    "install:all": "./scripts/install-dependencies.sh",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\" --ignore-path .gitignore --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\" --ignore-path .gitignore --ignore-path .prettierignore",
     "prepare": "husky"
@@ -20,9 +22,12 @@
     "eslint-plugin-import": "^2.29.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
+    "ncp": "^2.0.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "typescript": "^5.6.3"
+    "rimraf": "^5.0.7",
+    "typescript": "^5.6.3",
+    "undici": "^6.24.0"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^2.0.20"

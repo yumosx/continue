@@ -117,9 +117,9 @@ tasks {
     }
 
     runIde {
-        val openProject = "$projectDir/../../manual-testing-sandbox"
+        val openProject = projectDir.asFile.absolutePath
         argumentProviders += CommandLineArgumentProvider {
-            listOf(openProject, "$openProject/test.kt")
+            listOf(openProject)
         }
     }
 
