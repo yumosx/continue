@@ -10,6 +10,8 @@ export function validateSingleEdit(
   oldString: unknown,
   newString: unknown,
   replaceAll: unknown,
+  from: string,
+  to: string,
   index?: number,
 ): { oldString: string; newString: string; replaceAll?: boolean } {
   const context = index !== undefined ? `edit at index ${index}: ` : "";

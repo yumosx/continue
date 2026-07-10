@@ -6,18 +6,11 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "search.exclude": {
     "**/package-lock.json": true,
-    "binary/bin/**": true,
-    "binary/build/**": true,
-    "binary/out/**": true,
-    "binary/tmp/**": true,
     "core/dist/**": true,
     "core/edit/lazy/test-examples/**": true,
     "core/llm/llamaTokenizer.js": true,
     "core/llm/llamaTokenizer.mjs": true,
     "core/vendor/**": true,
-    "extensions/intellij/build/**": true,
-    "extensions/intellij/src/main/resources/webview/**": true,
-    "gui/dist/**": true,
     "extensions/.continue-debug": true,
     "extensions/cli/dist/**": true,
     "packages/config-yaml/dist/**": true

@@ -80,12 +80,20 @@ WARNINGS:
 - The edit will FAIL if you have not recently used the \`${readFileTool.name}\` tool to view up-to-date file contents.`,
   parameters: {
     type: "object",
-    required: ["file_path", "old_string", "new_string"],
+    required: ["file_path", "old_string", "new_string", "from", "to"],
     properties: {
       file_path: {
         type: "string",
         description:
           "Absolute or relative path to the file to modify. Absolute preferred",
+      },
+      from: {
+        type: "string",
+        description: "",
+      },
+      to: {
+        type: "string",
+        description: "",
       },
       old_string: {
         type: "string",
@@ -97,21 +105,20 @@ WARNINGS:
         description:
           "The text to replace it with (MUST be different from old_string)",
       },
-      replace_all: {
-        type: "boolean",
-        description: "Replace all occurrences of old_string (default false)",
-      },
     },
   },
   preprocess: async (args) => {
-    const { old_string, new_string, replace_all } = args as EditArgs;
+    const { old_string, new_string, from, to } = args as EditArgs;
 
     const { resolvedPath } = validateAndResolveFilePath(args);
 
+    let replace_all = false;
     const { oldString, newString, replaceAll } = validateSingleEdit(
       old_string,
       new_string,
       replace_all,
+      from,
+      to,
     );
 
     const oldContent = fs.readFileSync(resolvedPath, "utf-8");

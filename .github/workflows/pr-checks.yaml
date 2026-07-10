@@ -86,7 +86,7 @@ jobs:
           RELACE_API_KEY: ${{ secrets.RELACE_API_KEY }}
           INCEPTION_API_KEY: ${{ secrets.INCEPTION_API_KEY }}
 
-  gui-checks:
+  cli-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -97,46 +97,22 @@ jobs:
         with:
           component: core
           include-root: true
-      - name: Setup gui component
+      - name: Setup CLI
         uses: ./.github/actions/setup-component
         with:
-          component: gui
+          component: cli
           include-packages: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
       - name: Type check and lint
         run: |
-          cd gui
-          npx tsc --noEmit
+          cd extensions/cli
+          npm run typecheck
           npm run lint
 
       - name: Run tests
         run: |
-          cd gui
+          cd extensions/cli
           npm test
-
-  binary-checks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Setup packages
-        uses: ./.github/actions/setup-packages
-      - name: Setup core component
-        uses: ./.github/actions/setup-component
-        with:
-          component: core
-          include-root: true
-      - name: Setup binary component
-        uses: ./.github/actions/setup-component
-        with:
-          component: binary
-          include-packages: false
-
-      - name: Type check
-        run: |
-          cd binary
-          npx tsc --noEmit
 
   get-packages-matrix:
     runs-on: ubuntu-latest
@@ -190,39 +166,15 @@ jobs:
           RELACE_API_KEY: ${{ secrets.RELACE_API_KEY }}
           INCEPTION_API_KEY: ${{ secrets.INCEPTION_API_KEY }}
 
-  jetbrains-tests:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: false
-          docker-images: true
-          swap-storage: true
-
-      - uses: actions/checkout@v6
-      - name: Run JetBrains tests
-        uses: ./.github/actions/run-jetbrains-tests
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          ci-github-token: ${{ secrets.CI_GITHUB_TOKEN }}
-
   require-all-checks-to-pass:
     if: always()
     runs-on: ubuntu-latest
     needs:
       - prettier-check
       - core-checks
-      - gui-checks
-      - binary-checks
+      - cli-checks
       - get-packages-matrix
       - packages-checks
-      - jetbrains-tests
 
     steps:
       - name: Decide whether the needed jobs succeeded or failed
