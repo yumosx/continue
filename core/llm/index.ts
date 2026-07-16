@@ -316,9 +316,8 @@ export abstract class BaseLLM implements ILLM {
       apiKey: this.apiKey ?? "",
       apiBase: this.apiBase,
       requestOptions: this.requestOptions,
-      env: this._llmOptions.env,
       useResponsesApi: this._llmOptions.useResponsesApi,
-    });
+    } as any);
   }
 
   listModels(): Promise<string[]> {

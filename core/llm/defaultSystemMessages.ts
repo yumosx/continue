@@ -65,6 +65,10 @@ export const DEFAULT_AGENT_SYSTEM_MESSAGE = `\
 
   If you need to use multiple tools, you can call multiple read-only tools simultaneously.
 
+  In the final response shown to the user, do not use emoji or special Unicode symbols.
+  Prefer plain ASCII punctuation (e.g. - instead of —, " instead of “”, ... instead of …).
+  Do not decorate replies with icons, pictographs, or ornamental characters.
+
 ${CODEBLOCK_FORMATTING_INSTRUCTIONS}
 
 ${BRIEF_LAZY_INSTRUCTIONS}

@@ -1,19 +1,18 @@
-import { jest } from "@jest/globals";
 import Anthropic from "../Anthropic.js";
 import Deepseek from "../Deepseek.js";
-import FunctionNetwork from "../FunctionNetwork.js";
-import Mistral from "../Mistral.js";
+import Gemini from "../Gemini.js";
+import MiniMax from "../MiniMax.js";
 import OpenAI from "../OpenAI.js";
-import Vllm from "../Vllm.js";
+import zAI from "../zAI.js";
 
 // Test cases: [LLM class, model, expected supportsFim result, description]
 const testCases: [any, string, boolean, string][] = [
-  [Vllm, "any-model", false, "Vllm"],
   [Anthropic, "claude-3-5-sonnet-latest", false, "Anthropic"],
-  [FunctionNetwork, "any-model", false, "FunctionNetwork"],
   [OpenAI, "codestral", false, "OpenAI"],
-  [Mistral, "codestral", true, "Mistral"],
   [Deepseek, "deepseek-chat", true, "Deepseek"],
+  [Gemini, "gemini-2.5-flash", false, "Gemini"],
+  [MiniMax, "MiniMax-M2.7", false, "MiniMax"],
+  [zAI, "glm-4.5", false, "zAI"],
 ];
 
 testCases.forEach(([LLMClass, model, expectedResult, description]) => {

@@ -10,127 +10,22 @@ import {
 import { renderTemplatedString } from "../../util/handlebars/renderTemplatedString";
 import { BaseLLM } from "../index";
 import Anthropic from "./Anthropic";
-import Asksage from "./Asksage";
-import Azure from "./Azure";
-import Bedrock from "./Bedrock";
-import BedrockImport from "./BedrockImport";
-import Cerebras from "./Cerebras";
-import Cloudflare from "./Cloudflare";
-import Cohere from "./Cohere";
-import CometAPI from "./CometAPI";
-import DeepInfra from "./DeepInfra";
 import Deepseek from "./Deepseek";
-import Docker from "./Docker";
-import Fireworks from "./Fireworks";
-import Flowise from "./Flowise";
-import FunctionNetwork from "./FunctionNetwork";
 import Gemini from "./Gemini";
-import Groq from "./Groq";
-import HuggingFaceInferenceAPI from "./HuggingFaceInferenceAPI";
-import HuggingFaceTEIEmbeddingsProvider from "./HuggingFaceTEI";
-import HuggingFaceTGI from "./HuggingFaceTGI";
-import Inception from "./Inception";
-import Kindo from "./Kindo";
-import LlamaCpp from "./LlamaCpp";
-import Llamafile from "./Llamafile";
-import LlamaStack from "./LlamaStack";
-import Lemonade from "./Lemonade";
-import LMStudio from "./LMStudio";
-import Mistral from "./Mistral";
-import Mimo from "./Mimo";
 import MiniMax from "./MiniMax";
 import MockLLM from "./Mock";
-import Moonshot from "./Moonshot";
-import Msty from "./Msty";
-import NCompass from "./NCompass";
-import Nebius from "./Nebius";
-import Nous from "./Nous";
-import Novita from "./Novita";
-import Nvidia from "./Nvidia";
-import Ollama from "./Ollama";
 import OpenAI from "./OpenAI";
-import OpenRouter from "./OpenRouter";
-import ClawRouter from "./ClawRouter";
-import OVHcloud from "./OVHcloud";
-import { Relace } from "./Relace";
-import Replicate from "./Replicate";
-import SageMaker from "./SageMaker";
-import SambaNova from "./SambaNova";
-import Scaleway from "./Scaleway";
-import SiliconFlow from "./SiliconFlow";
-import Tensorix from "./Tensorix";
-import TARS from "./TARS";
 import TestLLM from "./Test";
-import TextGenWebUI from "./TextGenWebUI";
-import Together from "./Together";
-import Venice from "./Venice";
-import VertexAI from "./VertexAI";
-import Vllm from "./Vllm";
-import Voyage from "./Voyage";
-import WatsonX from "./WatsonX";
-import xAI from "./xAI";
 import zAI from "./zAI";
+
 export const LLMClasses = [
   Anthropic,
-  Cohere,
-  CometAPI,
-  FunctionNetwork,
-  Gemini,
-  Llamafile,
-  Moonshot,
-  Ollama,
-  Replicate,
-  TextGenWebUI,
-  Together,
-  Novita,
-  HuggingFaceTGI,
-  HuggingFaceTEIEmbeddingsProvider,
-  HuggingFaceInferenceAPI,
-  Kindo,
-  LlamaCpp,
-  OpenAI,
-  OVHcloud,
-  Lemonade,
-  LMStudio,
-  Mistral,
-  Mimo,
-  MiniMax,
-  Bedrock,
-  BedrockImport,
-  SageMaker,
-  DeepInfra,
-  Flowise,
-  Groq,
-  Fireworks,
-  NCompass,
-  Cloudflare,
   Deepseek,
-  Docker,
-  Msty,
-  Azure,
-  WatsonX,
-  OpenRouter,
-  ClawRouter,
-  Nvidia,
-  Vllm,
-  SambaNova,
+  Gemini,
+  MiniMax,
   MockLLM,
+  OpenAI,
   TestLLM,
-  Cerebras,
-  Asksage,
-  Nebius,
-  Nous,
-  Venice,
-  VertexAI,
-  xAI,
-  SiliconFlow,
-  Tensorix,
-  Scaleway,
-  Relace,
-  Inception,
-  Voyage,
-  LlamaStack,
-  TARS,
   zAI,
 ];
 
@@ -156,8 +51,6 @@ export async function llmFromDescription(
 
   let baseChatSystemMessage: string | undefined = undefined;
   if (desc.systemMessage !== undefined) {
-    // baseChatSystemMessage = DEFAULT_CHAT_SYSTEM_MESSAGE;
-    // baseChatSystemMessage += "\n\n";
     baseChatSystemMessage = await renderTemplatedString(
       Handlebars,
       desc.systemMessage,
