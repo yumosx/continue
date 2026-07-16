@@ -28,7 +28,6 @@
     "dotenv": "^16.5.0",
     "google-auth-library": "^10.4.1",
     "json-schema": "^0.4.0",
-    "node-fetch": "^3.3.2",
     "openai": "^5.23.2",
     "uuid": "^11.1.0",
     "zod": "^3.25.76"
@@ -40,14 +39,10 @@
     "@semantic-release/github": "^11.0.3",
     "@semantic-release/npm": "^13.1.5",
     "@semantic-release/release-notes-generator": "^14.0.3",
-    "@types/follow-redirects": "^1.14.4",
     "@types/jest": "^29.5.14",
     "@types/json-schema": "^7.0.15",
     "@types/node": "^24.3.0",
-    "cross-env": "^7.0.3",
     "semantic-release": "^24.2.7",
-    "ts-jest": "^29.2.3",
-    "ts-node": "^10.9.2",
     "vitest": "^3.2.4"
   },
   "overrides": {
