@@ -180,14 +180,10 @@ export async function getQueryForFile(
     return undefined;
   }
 
-  const sourcePath = path.join(
-    process.env.NODE_ENV === "test" ? process.cwd() : __dirname,
-    "..",
-    ...(process.env.NODE_ENV === "test"
-      ? ["extensions", "vscode", "tree-sitter"]
-      : ["tree-sitter"]),
-    queryPath,
-  );
+  const sourcePath =
+    process.env.NODE_ENV === "test"
+      ? path.join(process.cwd(), "tree-sitter", queryPath)
+      : path.join(__dirname, "..", "tree-sitter", queryPath);
   if (!fs.existsSync(sourcePath)) {
     return undefined;
   }

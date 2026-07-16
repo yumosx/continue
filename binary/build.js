@@ -8,7 +8,7 @@ const { ALL_TARGETS, TARGET_TO_LANCEDB } = require("./utils/targets");
 const { fork } = require("child_process");
 const {
   installAndCopyNodeModules,
-} = require("../extensions/vscode/scripts/install-copy-nodemodule");
+} = require("../scripts/build/install-copy-nodemodule");
 const { bundleBinary } = require("./utils/bundle-binary");
 
 const bin = path.join(__dirname, "bin");
@@ -144,12 +144,12 @@ async function buildWithEsbuild() {
     );
   });
 
-  // copy tree-sitter colder to binary folder to make it available when running in intellij debug mode
+  // copy tree-sitter queries to binary folder for IntelliJ / packaged runtime
   const treeSitterDir = path.join(__dirname, "tree-sitter");
   fs.mkdirSync(treeSitterDir);
   await new Promise((resolve, reject) => {
     ncp(
-      path.join(__dirname, "..", "extensions", "vscode", "tree-sitter"),
+      path.join(__dirname, "..", "core", "tree-sitter"),
       treeSitterDir,
       { dereference: true },
       (error) => {
@@ -185,6 +185,43 @@ async function buildWithEsbuild() {
   }
 
   await buildWithEsbuild();
+
+  // pkg targets Node 18 and cannot resolve newer builtins / APIs.
+  // - node:sqlite: pulled in by undici's optional SqliteCacheStore
+  // - diagnostics_channel.tracingChannel: used by lru-cache, added in Node 19.9+
+  const esbuildOut = path.join(out, "index.js");
+  const original = fs.readFileSync(esbuildOut, "utf8");
+  const stubSqlite =
+    '()=>{const e=new Error("Cannot find module \'node:sqlite\'");e.code="ERR_UNKNOWN_BUILTIN_MODULE";throw e}';
+  // Minimal diagnostics_channel stub: channel/tracingChannel no-ops for pkg Node 18
+  const stubDiagnosticsChannel = `(function(){var noop=function(){};var ch=function(){return{hasSubscribers:false,publish:noop,subscribe:noop,unsubscribe:noop}};return{channel:ch,tracingChannel:function(){return{hasSubscribers:false,subscribe:noop,unsubscribe:noop,traceSync:function(f){return f()},tracePromise:function(f){return Promise.resolve().then(f)},traceCallback:function(f){return f}}}}})()`;
+  let next = original
+    .replaceAll('()=>require("node:sqlite")', stubSqlite)
+    .replaceAll("()=>require('node:sqlite')", stubSqlite)
+    .replaceAll('require("node:sqlite")', `(${stubSqlite})()`)
+    .replaceAll("require('node:sqlite')", `(${stubSqlite})()`);
+  if (next !== original) {
+    console.log("[info] Stubbed node:sqlite requires for pkg compatibility");
+  }
+  const afterSqlite = next;
+  next = afterSqlite
+    .replaceAll('require("node:diagnostics_channel")', stubDiagnosticsChannel)
+    .replaceAll("require('node:diagnostics_channel')", stubDiagnosticsChannel);
+  if (next !== afterSqlite) {
+    console.log(
+      "[info] Stubbed node:diagnostics_channel for pkg Node 18 compatibility",
+    );
+  }
+  // File global landed in Node 20; pkg's Node 18 throws ReferenceError without it
+  // (axios/undici call MakeTypeAssertion(File) at module load).
+  const filePolyfill = `;(function(){if(typeof globalThis.File!=="undefined")return;if(typeof globalThis.Blob!=="function")return;class File extends Blob{constructor(bits,name,opts={}){super(bits,opts);this.name=String(name);this.lastModified=opts.lastModified==null?Date.now():Number(opts.lastModified)}get[Symbol.toStringTag](){return"File"}}globalThis.File=File;})();\n`;
+  if (!next.startsWith(";(function(){if(typeof globalThis.File")) {
+    next = filePolyfill + next;
+    console.log("[info] Injected File polyfill for pkg Node 18 compatibility");
+  }
+  if (next !== original) {
+    fs.writeFileSync(esbuildOut, next);
+  }
 
   // Copy over any worker files
   fs.cpSync(

@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# This is used in a task in .vscode/tasks.json
-# Start developing with:
-# - Run Task -> Install Dependencies
-# - Debug -> Extension
+# Install dependencies for the JetBrains / IntelliJ Continue plugin stack.
 set -e
 
 # Check if node version matches .nvmrc
@@ -33,7 +30,7 @@ npm install
 echo "Building packages (fetch, openai-adapters, config-yaml)..."
 node ./scripts/build-packages.js
 
-echo "Installing Core extension dependencies..."
+echo "Installing Core dependencies..."
 pushd core
 ## This flag is set because we pull down Chromium at runtime
 export PUPPETEER_SKIP_DOWNLOAD='true'
@@ -41,22 +38,15 @@ npm install
 npm link
 popd
 
-echo "Installing GUI extension dependencies..."
+echo "Installing GUI dependencies..."
 pushd gui
 npm install
 npm link @continuedev/core
 NODE_OPTIONS="--max-old-space-size=4096" npm run build
 popd
 
-# VSCode Extension (will also package GUI)
-echo "Installing VSCode extension dependencies..."
-pushd extensions/vscode
-# This does way too many things inline but is the common denominator between many of the scripts
-npm install
-npm link @continuedev/core
-# npm run prepackage # not required since npm run package has prescript of prepackage
-npm run package
-popd
+echo "Copying GUI build into IntelliJ webview..."
+node ./scripts/copy-gui-to-intellij.js
 
 echo "Installing binary dependencies..."
 pushd binary
@@ -64,7 +54,4 @@ npm install
 npm run build
 popd
 
-echo "Installing docs dependencies..."
-pushd docs
-npm install
-popd
+echo "Done. Open extensions/intellij in IntelliJ and run the 'Run Continue' configuration."

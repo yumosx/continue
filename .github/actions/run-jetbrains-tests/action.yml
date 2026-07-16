@@ -5,9 +5,6 @@ inputs:
   github-token:
     description: "GitHub token for accessing repositories"
     required: true
-  ci-github-token:
-    description: "CI GitHub token for vscode extension build"
-    required: true
 
 runs:
   using: "composite"
@@ -28,12 +25,22 @@ runs:
         cd core
         npm ci
 
+    - uses: actions/cache@v4
+      id: gui-cache
+      with:
+        path: gui/node_modules
+        key: ${{ runner.os }}-gui-node-modules-${{ hashFiles('gui/package-lock.json') }}
+
     - name: Install gui node_modules and build
       shell: bash
       run: |
         cd gui
-        npm ci
+        if [ "${{ steps.gui-cache.outputs.cache-hit }}" != "true" ]; then
+          npm ci
+        fi
         npm run build
+        cd ..
+        node ./scripts/copy-gui-to-intellij.js
 
     - name: Setup Java
       uses: actions/setup-java@v4.5.0
@@ -49,44 +56,6 @@ runs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
-
-    - uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-npm-cache-jetbrains-${{ hashFiles('extensions/vscode/package-lock.json') }}
-
-    - uses: actions/cache@v4
-      id: vscode-extension-cache
-      with:
-        path: extensions/vscode/node_modules
-        key: ${{ runner.os }}-vscode-node-modules-${{ hashFiles('extensions/vscode/package-lock.json') }}
-
-    - uses: actions/cache@v4
-      id: gui-cache
-      with:
-        path: gui/node_modules
-        key: ${{ runner.os }}-gui-node-modules-${{ hashFiles('gui/package-lock.json') }}
-
-    # Cache prepackaged extension build to share with other jobs
-    - uses: actions/cache@v4
-      id: vscode-prepackage-cache
-      with:
-        path: extensions/vscode/build
-        key: ${{ runner.os }}-vscode-prepackage-${{ hashFiles('extensions/vscode/package-lock.json', 'extensions/vscode/**/*.ts', 'extensions/vscode/**/*.json') }}
-
-    # Only run prepackage if not cached - saves ~1 minute
-    - name: Run prepackage script
-      if: steps.vscode-prepackage-cache.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        cd extensions/vscode
-        if [ "${{ steps.vscode-extension-cache.outputs.cache-hit }}" != "true" ]; then
-          npm ci
-        fi
-        npm run prepackage
-      env:
-        # https://github.com/microsoft/vscode-ripgrep/issues/9#issuecomment-643965333
-        GITHUB_TOKEN: ${{ inputs.ci-github-token }}
 
     - uses: actions/cache@v4
       id: binary-cache

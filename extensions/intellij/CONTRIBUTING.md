@@ -132,7 +132,8 @@ you can learn from other open source plugins.
 - `extensions/intellij`: Attempt to reload changed classes by selecting
   _Run | Debugging Actions | Reload Changed Classes`_
   - This will often fail on new imports, schema changes etc. In that case, you need to stop and restart the extension
-- `gui`: Changes will be reloaded automatically
+- `gui`: In dev mode (`Start GUI Dev Server`) changes reload automatically. For packaged builds, run
+  `npm run build` in `gui/` then `node ./scripts/copy-gui-to-intellij.js` from the repo root
 - `core`: Run `npm run build -- --os [darwin | linux | win32]` from the `binary` directory (requires
   restarting the
   `Start Core Dev Server` task)

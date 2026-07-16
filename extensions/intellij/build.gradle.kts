@@ -21,6 +21,7 @@ group = pluginGroup
 version = if (isEap) "$pluginVersion-eap" else pluginVersion
 
 repositories {
+    maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
@@ -62,8 +63,22 @@ dependencies {
     testIntegrationImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 kotlin {
-    jvmToolchain(17)
+    // Use locally installed JDK 21; emit JVM 17 bytecode for IntelliJ 2024.1+ (JBR 17).
+    jvmToolchain(21)
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(17)
 }
 
 intellijPlatform {
